@@ -1,0 +1,76 @@
+body{
+    background-color: beige;height: 100vh;width: 100%;
+}
+.wrapper{
+    width: 800px;
+    margin: 0 auto;
+    height: 100%;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid black; */
+}
+.jumbotron{
+    margin-bottom: 10px !important;
+    padding: 10px 25px!important;
+}
+ol.breadcrumb{
+    margin-bottom: 10px;
+}
+.chat-container{
+    width:80%; 
+    margin: 0 auto; 
+    max-height: 460px;
+    flex: 1;
+    /* border: 1px solid blue;  */
+}
+.messages-section{
+    overflow-y: scroll;
+    padding: 10px;
+    width: 80%;
+    margin:0 auto;
+    flex:1;
+}
+.msg-box{
+    display: block;
+    width: auto;
+    max-width: 200px;
+    background-color: rgb(97, 139, 125);
+    padding: 10px; 
+    margin-bottom: 7px;
+    /* float: left; */
+    align-self: flex-end;
+    border-radius: 10px;
+    /* clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 100% 100%, 93% 90%, 0 90%); */
+}
+.msg-box.msg-partner{
+    align-self: flex-start;
+    text-align: right;
+    /* float: right!important; */
+    /* clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 7% 90%, 0% 100%, 0 90%)!important; */
+}
+.input-section{
+    height:100px;
+}
+.input-section textarea, .input-section .chat-buttons{
+    width: 80%;
+}
+textarea{
+    padding: 5px 10px;
+    height: 60px;
+    border: 0;
+    border: 1px solid black;
+    border-radius: 6px;
+    /* margin: 0 auto; */
+    /* border-bottom: 1px solid black; */
+}
+.chat-buttons{
+    margin-top: 5px;
+}
+.chat-buttons button:first-child{
+    margin-right: 8px;
+}
+button{
+    padding: 1px 20px;
+    height: 35px;
+}

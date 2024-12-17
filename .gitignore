@@ -1,0 +1,40 @@
+# Python/Django
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.env
+*.venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node.js/Express
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+.env
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+*.pyc
+*.pyo
+*.pyd
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project

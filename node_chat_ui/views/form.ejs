@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/assets/css/messager.css">
+    <style>
+        .wrapper{
+            width: 800px;
+            margin: 0 auto;
+            padding-top: 30px;
+        }
+    </style>
+</head>
+<body style="background-color: beige;height: 100vh;width: 100%;">
+    <div class="wrapper">
+        <div class="jumbotron">
+            <h1 class="display-4">Weclome to <strong>Chat Monitor</strong></h1>
+            <hr class="my-4">
+            <p>Utilize the navigation bar below to go through our site and of course <em>have fun !</em></p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/rooms">Chat rooms</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Discussion with Moja</li>
+            </ol>
+        </nav>
+
+        <section class="d-flex flex-column chat-container">
+            <div class="messages-section d-flex flex-column-reverse"></div>
+            <div class="input-section chat-container-boxes d-flex flex-column justify-center align-items-center">
+                <textarea rows="2" name="" id="message-area"></textarea>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="chat-buttons d-flex justify-content-end align-items-end">
+                    <button id="message-area-cancel" class="btn btn-secondary">Cancel</button>
+                    <button id="message-area-send" class="btn btn-success">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- <div class="form-group">
+            <label for="usermessage">your message:</label>
+            <textarea name="user_message" class="form-control" id="usermessage" rows="3"></textarea>
+        </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button id="message_send" class="btn btn-primary">Submit</button> -->
+    </div>
+
+
+    <template id="send-message">
+        <div class="msg-box"> </div>
+    </template> 
+    <template id="received-message">
+        <div class="msg-box msg-partner"></div>
+    </template> 
+
+    <script>
+        var messages = [
+            {message:"Hola mamacita",type:"send"},
+            {message:"Hola papi",type:"received"}
+        ];
+        var local_chat_sessionstore = [];
+        var socket_waiting_messages = [];
+        var roomuuid = '<%= roomuuid %>';
+        var useruuid = '<%= useruuid %>';
+        var participantuuid = getCorrespondantFromUrl();
+      
+
+
+        function insertBulk(messages, templatesend, templatereceiv, msgContainer){
+            var clonesend = templatesend.content.cloneNode(true);
+            var clonereceiv = templatereceiv.content.cloneNode(true);
+            messages.forEach(m =>{
+                var msgelement = m.type == "send" ? clonesend.querySelector(".msg-box") : clonereceiv.querySelector(".msg-box.msg-partner");
+                msgelement.innerText = "";
+                msgelement.innerText = m.message;
+                msgContainer.appendChild(msgelement);
+            });
+        }
+        function insertMsg(messagetype, content, template, msgContainer){
+            var clonecontent,msgelement;
+            clonecontent = template.content.cloneNode(true);
+            msgelement = messagetype == "send" ? clonecontent.querySelector(".msg-box") : clonecontent.querySelector(".msg-box.msg-partner") ;
+            msgelement.innerText = content
+            msgContainer.appendChild(msgelement);
+        }
+        function getCorrespondantFromUrl(){
+            const searchParams = new URLSearchParams(window.location.search);
+            var urlsegments = window.location.pathname.split("/");
+            return urlsegments[urlsegments.length-1];
+        }
+        function generateItemUUID(itemtype){
+            return `${itemtype}-${crypto.randomUUID()}`
+        }
+        function axios_post(url, data){
+            var data_to_send = {...data,  _csrf: document.querySelector("input[name='_csrf']").value};
+            return axios({
+                method: 'post', 
+                url: url,
+                data: data_to_send
+            });
+        }
+        function websocketInit(url){
+            const socket = new WebSocket(url);
+            socket.onopen = function(event){
+                console.log('WebSocket is connected.');
+                var istherework = socket_waiting_messages.length>0 ? true : false;
+                console.log('check if pending messages to send: ... ',istherework);
+                if(istherework==true){
+                    for(let msg of socket_waiting_messages){
+                        socket.send(JSON.stringify({message: msg}));
+                    }
+                }
+            }
+            socket.onclose = function(event) {
+                console.log('WebSocket is closed. Attempting to reconnect...');
+                reconnectWebSocket(url);
+            };
+            return socket;
+        }
+        function reconnectWebSocket(url) {
+            socketdjango = websocketInit(url);
+        }
+
+        document.addEventListener("DOMContentLoaded",function(){
+            var textinput = document.querySelector("#message-area");
+            var templatenewmsg = document.querySelector("#send-message");
+            var templaterecmsg = document.querySelector("#received-message");
+            var messageList = document.querySelector(".messages-section");
+            var sendbutton = document.querySelector("#message-area-send");
+            var cancelbutton = document.querySelector("#message-area-cancel");
+            var socketdjango = websocketInit("ws://127.0.0.1:8000/ws/chat-room/");
+
+            /**
+             * message received from socket
+             * 2 scenario: update on message, reception of other person message
+             * participant message: update local session store
+             * update on message: update local session store and sync with server
+            */
+            socketdjango.onmessage = function(event){
+                console.log(event.data);
+                if(event.data.type="message-dispatch"){
+                    console.log("Message received from socket - dispatcher method ");
+                    let data = JSON.parse(event.data);
+                    local_chat_sessionstore.push(data.message);
+                }else{
+                    local_chat_sessionstore.filter(m => m.uuid == data.message.uuid).map(m => m.tag = true);
+                    axios_post('/rooms/message-update',{
+                        room: room_uuid,
+                        message: data.message
+                    }).then(function(r){
+                        console.log(r);
+                    })
+                }
+                console.log("new state of local session store");
+                console.log(local_chat_sessionstore);
+            }
+
+            /**
+             * UI(Button) interaction and business event management
+             * On new message: -message object, -chat store sync with nodeserver -django message save
+            */
+            cancelbutton.addEventListener("click",function(){
+                console.log("try to delete content");
+            });
+            sendbutton.addEventListener("click",function(){
+                var message = {
+                    body: textinput.value,
+                    tag: null,
+                    created_at: null,
+                    room_uuid: roomuuid,
+                    sender:useruuid,
+                    receiver:participantuuid,
+                    message_uuid: generateItemUUID(""),
+                };
+                axios_post("/rooms/room-message",{room:roomuuid, message:message}).then(function(response){
+                    console.log('reponse from nodeserver');
+                    console.log(response);
+                    insertMsg("send",textinput.value,templatenewmsg,messageList);
+                });
+                if(socketdjango.readyState == 1){
+                    console.log("send to socket now");
+                    socketdjango.send(JSON.stringify({message: message}));
+                }else{
+                    socket_waiting_messages.push(message);
+                }
+                
+            });
+        });
+    </script>
+    <script src="/assets/lib/axios.min.js"></script>
+    <!-- <script src="/assets/js/messager.js"></script> -->
+</body>
+</html>

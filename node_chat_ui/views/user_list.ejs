@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        .wrapper{
+            width: 800px;
+            margin: 0 auto;
+            padding-top: 30px;
+        }
+        .room{
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            background-color: lightpink;
+        }
+        .room a:hover{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body style="background-color: beige;height: 100vh;width: 100%;">
+    <div class="wrapper">
+        <div class="jumbotron">
+            <h1 class="display-4">Weclome to <strong>Chat Monitor</strong></h1>
+            <hr class="my-4">
+            <p>Utilize the navigation bar below to go through our site and of course <em>have fun !</em></p>
+        </div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/rooms">Chat rooms</a></li>
+            </ol>
+        </nav>
+        <div class="room-container" style="display:flex;justify-content:start;flex-wrap:wrap;padding: 5px 20px;">
+            <% users.forEach((user)=>{ %>
+                <div class="room" style="margin-right:8px;margin-bottom: 5px;">
+                    <a href= <%= '/rooms/' + user.uuid %>>
+                        <div class="d-flex flex-column text-center mx-auto" >
+                            <i class="bi bi-chat-left-dots-fill" style="font-size: 25px;"></i>
+                            <span>Talk with <strong><%= user.username %></strong></span>
+                        </div>
+                    </a>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+
+  <!-- Modal sections -->
+    <!-- 1- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="loginModalLabel">Login Form</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form action="/rooms/login" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                      <label for="user-name" class="col-form-label">username</label>
+                      <input name="username" type="text" class="form-control" id="user-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-pass" class="col-form-label">Password: </label>
+                        <input name="password" type="password" class="form-control" id="user-pass">
+                    </div>
+                    <div class="form-group">
+                        <small class="d-inline-block" style="width: 100%;">
+                            <span style="float: left;">Don't have an account ?</span>
+                            <span style="float: right;">
+                                <a id="newAccount" href="#createaccount">Create account</a>
+                            </span>
+                        </small>
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-block btn-primary">Login</button>
+                </div>
+            </form>
+          </div>
+        </div>
+    </div>
+
+    <!-- 2- Signup Modal -->
+    <div class="modal fade d-none" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="signupModal">Signup Form</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form action="/rooms/signup" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="user-name" class="col-form-label">Username: </label>
+                        <input name="username" type="text" class="form-control" id="user-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-email" class="col-form-label">Email: </label>
+                        <input name="email" type="email" class="form-control" id="user-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-pass" class="col-form-label">Password: </label>
+                        <input name="password" type="password" class="form-control" id="user-pass">
+                    </div>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-block btn-primary">Create my account</button>
+                </div>
+            </form>
+          </div>
+        </div>
+    </div>
+    <script src="/assets/js/users-checking.js"></script>
+</body>
+</html>
+
+<!-- old code -->
+<!-- function axios_post(url, data){
+    var data_to_send = {...data,  _csrf: document.querySelector("input[name='_csrf']").value};
+    return axios({
+        method: 'post', 
+        url: url,
+        data: data_to_send
+    });
+}
+const socket = new WebSocket('ws://127.0.0.1:8000/ws/chat-room/');
+let message_data = {
+    room_uuid: crypto.randomUUID(),
+    message_uuid: crypto.randomUUID(),
+    sender: 'cap',
+    receiver: 'lori harvey',
+    created_at: null,
+    tag: null,
+    body:"this is the content you want"
+}
+socket.onopen = function(event) {
+    console.log('WebSocket is connected.');
+    socket.send(JSON.stringify({message: message_data}));
+    // after sending to websocket for sharing: 
+    // sync chat_session_store
+    axios_post('/rooms/room-message',{
+        room: room_uuid,
+        message: message_data
+    }).then(function(r){
+        console.log(r);
+    })
+};
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log("Message received:", data.message);
+    // You can also update the DOM here to display the message
+};
+//when socket send data after the tag has been modified
+socket2.onmessage = function(event){
+    const data = JSON.parse(event.data);
+    axios_post('/rooms/message-update',{
+        room: room_uuid,
+        message: data.message
+    }).then(function(r){
+        console.log(r);
+    })
+} -->

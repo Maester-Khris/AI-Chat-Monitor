@@ -1,0 +1,57 @@
+POST http://127.0.0.1:8000/api/auth/login
+Content-Type: application/json
+
+{"username":"Milo","password":"Milo1234"}
+
+###
+
+POST http://127.0.0.1:8000/api/users/new
+Content-Type: application/json
+
+{"username":"Moja","password":"Moja1234","email":"moja@gmail.com","useruuid":"f41a239f-0932-4ffe-8933-2d33a985b5e9"}
+
+###
+
+GET http://127.0.0.1:8000/api/users/list
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5MjAyMDQ5LCJpYXQiOjE3MjkyMDE3NDksImp0aSI6ImMyM2NmMTVhZmNmNzRhYTc5NWQ5ZWQ5NGY2ZTI0MTczIiwidXNlcl9pZCI6MSwidXVpZCI6IjA2YWFiYTJiLTQ4MmItNGEzYS1iZDA3LWJlYmE0NTA5N2RlZCJ9.LOzOOlMn5W235w3FvDARnwALXiDDr1sLTui1K8Cv4qk
+
+###
+
+POST http://127.0.0.1:8000/api/messages/add
+Content-Type: application/json
+#Authorization: Token adfd78afa5f7a1784fd98f9ba8bbb923e5009b63
+
+{
+    "body":"Hey man, it's great to see you !",
+    "tag":false, 
+    "sender":"dc00e9f4-fdac-4184-98ae-ac7052f3c733", 
+    "receiver":"d252bbd7-91b0-49d1-bf19-05e08e9ba2f0",
+    "message_uuid":"2ad8defc-1349-49af-a1e9-61d3c425565d", 
+    "room_uuid":"8133e340-3cfb-450d-a779-a2ba782b387b"
+}
+
+###
+
+GET http://127.0.0.1:8000/api/messages/participants/06aaba2b-482b-4a3a-bd07-beba45097ded/f41a239f-0932-4ffe-8933-2d33a985b5e9
+Content-Type: application/json
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5MjAyODI3LCJpYXQiOjE3MjkyMDI1MjcsImp0aSI6IjFhYjY5ZDM5NWMxMTQ1MjY5YzMyYzUyODY5NmE5NDU2IiwidXNlcl9pZCI6MSwidXVpZCI6IjA2YWFiYTJiLTQ4MmItNGEzYS1iZDA3LWJlYmE0NTA5N2RlZCJ9.XWpcooo_Rq-yKJefX8iEgclLW9yknKiArChFIamNXxE
+
+
+###
+
+GET http://127.0.0.1:8000/api/messages/list
+Content-Type: application/json
+#Authorization: Token adfd78afa5f7a1784fd98f9ba8bbb923e5009b63
+
+###
+
+PATCH http://127.0.0.1:8000/api/messages/updatetag
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI5MjAyODI3LCJpYXQiOjE3MjkyMDI1MjcsImp0aSI6IjFhYjY5ZDM5NWMxMTQ1MjY5YzMyYzUyODY5NmE5NDU2IiwidXNlcl9pZCI6MSwidXVpZCI6IjA2YWFiYTJiLTQ4MmItNGEzYS1iZDA3LWJlYmE0NTA5N2RlZCJ9.XWpcooo_Rq-yKJefX8iEgclLW9yknKiArChFIamNXxE
+
+{
+    "tag":true, 
+    "message_uuid":"2ad8defc-1349-49af-a1e9-61d3c425565d"
+}
+
